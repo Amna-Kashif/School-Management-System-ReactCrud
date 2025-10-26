@@ -1,0 +1,14 @@
+.subject-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #ffffff; 
+  border-radius: 10px;
+}
+
+.subject-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+#subjects .card-text {
+  font-family: 'Quicksand', sans-serif; 
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const AdmissionForm = () => {
   const initialState = {
@@ -11,18 +11,7 @@ const AdmissionForm = () => {
   };
 
   const [formData, setFormData] = useState(initialState);
-  const [candidates, setCandidates] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('candidates');
-    if (stored) setCandidates(JSON.parse(stored));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('candidates', JSON.stringify(candidates));
-  }, [candidates]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -39,31 +28,12 @@ const AdmissionForm = () => {
       }
     }
 
-    if (editIndex !== null) {
-      const updated = [...candidates];
-      updated[editIndex] = formData;
-      setCandidates(updated);
-      setEditIndex(null);
-    } else {
-      setCandidates([...candidates, formData]);
-    }
+    console.log('Form submitted:', formData);
 
     setFormData(initialState);
     setSubmitted(true);
 
     setTimeout(() => setSubmitted(false), 3000);
-  };
-
-  const handleEdit = (index) => {
-    setFormData(candidates[index]);
-    setEditIndex(index);
-  };
-
-  const handleDelete = (index) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
-      const updated = candidates.filter((_, i) => i !== index);
-      setCandidates(updated);
-    }
   };
 
   return (
@@ -114,62 +84,24 @@ const AdmissionForm = () => {
 
                 <div className="col-12 text-center">
                   <button type="submit" className="btn btn-warning px-5">
-                    {editIndex !== null ? 'Update' : 'Submit'}
+                    Submit
                   </button>
                 </div>
               </div>
             </form>
 
             {submitted && (
-            <div className="alert alert-success mt-3">Thank you for applying. Please prepare for your admission test. You will receive further information via email.</div>
+              <div className="alert alert-success mt-3">
+                Thank you for applying. Please prepare for your admission test. You will receive further information via email.
+              </div>
             )}
-
           </div>
 
-          <div className="col-md-5 my-4"> <img src="/form-img.jfif" alt="Admission Form" className="img-fluid rounded shadow" style={{ height: '100%', objectFit: 'cover' }} /> </div>
-        </div>
+          <div className="col-md-5 my-4">
+            <img src="/form-img.jfif" alt="Admission Form" className="img-fluid rounded shadow" style={{ height: '100%', objectFit: 'cover' }} />
+          </div>
 
-        <div className="mt-5">
-          <h3 className="mb-3">Applied Candidates</h3>
-          {candidates.length === 0 ? (
-            <p>No candidates have applied yet.</p>
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-bordered table-striped">
-                <thead className="table-dark">
-                  <tr>
-                    <th>#</th>
-                    <th>Full Name</th>
-                    <th>DOB</th>
-                    <th>Email</th>
-                    <th>Contact</th>
-                    <th>Grade</th>
-                    <th>Address</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {candidates.map((candidate, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{candidate.fullName}</td>
-                      <td>{candidate.dob}</td>
-                      <td>{candidate.email}</td>
-                      <td>{candidate.contact}</td>
-                      <td>{candidate.grade}</td>
-                      <td>{candidate.address}</td>
-                      <td>
-                        <button className="btn btn-sm btn-warning me-md-2 me-xs-0 mb-md-0 mb-1" onClick={() => handleEdit(index)}>Edit</button>
-                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(index)}>Delete</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
-
       </div>
     </section>
   );

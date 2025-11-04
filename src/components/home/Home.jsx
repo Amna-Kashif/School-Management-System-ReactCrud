@@ -1,9 +1,16 @@
 import React from 'react'
 import { Container } from 'react-bootstrap'
 import './Home.css';
+import Navbar from '../navbar/Navbar';
+import AdmissionForm from '../form/AdmissionForm';
+import Faculty from '../faculty/Faculty';
+import Vision from '../vision/Vision';
+import Subjects from '../subjects/Subjects';
 
 const Home = () => {
   return (
+    <>
+    <Navbar />
         <section id='home' className='home-section'>
             <div className="banner-wrapper">
                 <img src="/banner.png" alt="Banner" className='banner-img' />
@@ -16,6 +23,12 @@ const Home = () => {
                 </div>
             </div>
         </section>
+
+    <AdmissionForm />
+    <Faculty />
+    <Vision />
+    <Subjects />
+    </>
   )
 }
 

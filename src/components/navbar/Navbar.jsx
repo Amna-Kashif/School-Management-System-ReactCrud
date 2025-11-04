@@ -14,31 +14,46 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
-const navItems = [
-  {label: 'Home', id: 'home'},
-  {label: 'Admission', id: 'admission'},
-  {label: 'Faculty', id: 'faculty'},
-  {label: 'Vision', id: 'vision'},
-  {label: 'Subjects', id: 'subjects'},
-];
 
-function Navbar(props) {
+const Navbar = (props) => {
+  const navigate = useNavigate();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
-  };
+  const role = localStorage.getItem("role");
+
+  const navItems = [
+    { label: 'Home', id: 'home' },
+    { label: 'Admission', id: 'admission' },
+    { label: 'Faculty', id: 'faculty' },
+    { label: 'Vision', id: 'vision' },
+    { label: 'Subjects', id: 'subjects' },
+    ...(role === 'admin' ? [{ label: 'Dashboard', id: 'dashboard' }] : []),
+  ];
+
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const scrollToSection = (id) => {
-    const section = document.getElementById(id);
-    if(section) {
-      section.scrollIntoView({behavior: 'smooth'});
-      setMobileOpen(false)
+    if (id === 'dashboard') {
+      navigate('/dashboard');
+    } else {
+      navigate('/home');
+      setTimeout(() => {
+        const section = document.getElementById(id);
+        if (section) section.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
-}
+    setMobileOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
@@ -55,6 +70,15 @@ function Navbar(props) {
             </ListItemButton>
           </ListItem>
         ))}
+
+        {role === 'student' && (
+          <ListItem disablePadding>
+            <ListItemButton sx={{ textAlign: 'center' }} onClick={handleLogout}>
+              <ExitToAppIcon sx={{ mr: 1 }} />
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
     </Box>
   );
@@ -62,9 +86,11 @@ function Navbar(props) {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
+    <>
+    <Navbar />
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar component="nav" sx={{ bgcolor: '#333', px: 3}}>
+      <AppBar component="nav" sx={{ bgcolor: '#333', px: 3 }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -75,22 +101,41 @@ function Navbar(props) {
           >
             <MenuIcon />
           </IconButton>
+
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, alignItems: 'center' }}>
-              <img src="/Bright-Edge-Logo2.webp" alt="Logo" style={{ height: '60px', marginRight: '10px' }} />
-            <div>BrightEdge</div>
+            sx={{
+              flexGrow: 1,
+              display: { xs: 'none', sm: 'flex' },
+              alignItems: 'center',
+              gap: 1,
+            }}
+            >
+            <img src="/Bright-Edge-Logo2.webp" alt="Logo" style={{ height: '50px' }} />
+            BrightEdge
           </Typography>
-          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+
+          <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
             {navItems.map((item) => (
-              <Button key={item.id} sx={{ color: '#fff' }} onClick={() => scrollToSection(item.id)}>
+              <Button
+              key={item.id}
+                sx={{ color: '#fff', mx: 1 }}
+                onClick={() => scrollToSection(item.id)}
+              >
                 {item.label}
               </Button>
             ))}
+
+            {role === 'student' && (
+              <IconButton color="inherit" onClick={handleLogout} sx={{ ml: 1 }}>
+                <ExitToAppIcon />
+              </IconButton>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
+
       <nav>
         <Drawer
           container={container}
@@ -102,14 +147,14 @@ function Navbar(props) {
             display: { xs: 'block', sm: 'none' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
           }}
-        >
+          >
           {drawer}
         </Drawer>
       </nav>
-      
     </Box>
+          </>
   );
-}
+};
 
 Navbar.propTypes = { window: PropTypes.func };
 
